@@ -1,0 +1,45 @@
+{
+  "dataPath": "$.data2",
+  "columns": [
+    {
+      "path": "id",
+      "title": "ID",
+      "minWidth": 8,
+      "align": "center",
+      "urlPath": "url",
+      "color": "red"
+    },
+    {
+      "path": "url",
+      "color": [
+        "yellow",
+        "italic",
+        "underline"
+      ]
+    },
+    {
+      "path": "display.name",
+      "maxWidth": 8,
+      "align": "left",
+      "color": {
+        "default": "bgRed",
+        "conditions": [
+          {
+            "when": "ninnyhammer",
+            "color": "cyan"
+
+          },
+          {
+            "when": ["Alice", "baz"],
+            "color": ["green", "bold"]
+          }
+        ]
+      }
+    },
+    {
+      "path": "desc",
+      "maxWidth": 20,
+      "align": "right"
+    }
+  ]
+}

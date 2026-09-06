@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run json2table -c id",
+            "type": "go",
+            "request": "launch",
+            "program": "${workspaceFolder}/cmd/json2table/main.go",
+            "args": ["-c", "id", "./samples/data1.json"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

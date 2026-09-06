@@ -1,0 +1,14 @@
+{
+    "dataPath": "$.data2",
+    "columns": [
+        {
+            "path": "id",
+            "title": "ID",
+            "minWidth": 8
+        },
+        {
+            "path": ["display.name", "display.name1"],
+            "maxWidth": 8
+        }
+    ]
+}
