@@ -1,6 +1,6 @@
 {
-	"name": "GO 1.26 Development Dev Container",
-	"image": "siakhooi/devcontainer:go126_2604",
+	"name": "GO 1.27 Development Dev Container",
+	"image": "siakhooi/devcontainer:go127",
 	"remoteUser": "maui",
 	"containerUser": "maui",
 	"updateRemoteUserUID": true,
@@ -20,6 +20,7 @@
 	"mounts": [
 		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
 	],
+	"postStartCommand": "sudo chmod 666 /var/run/docker.sock || true",
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
 	}
