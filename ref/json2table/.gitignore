@@ -1,9 +1,0 @@
-bin/
-*.log
-
-# Added by goreleaser init:
-dist/
-test-coverage.out
-test-coverage.html
-test-report.json
-.scannerwork/
