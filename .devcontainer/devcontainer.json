@@ -9,6 +9,7 @@
 		"vscode": {
 			"extensions": [
 				"lfm.vscode-makefile-term",
+				"nefrob.vscode-just",
 				"yzhang.markdown-all-in-one",
 				"golang.go",
 				"humao.rest-client",
@@ -20,7 +21,6 @@
 	"mounts": [
 		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
 	],
-	"postStartCommand": "sudo chmod 666 /var/run/docker.sock || true",
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
 	}

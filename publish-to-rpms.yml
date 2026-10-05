@@ -1,0 +1,10 @@
+repo: siakhooi/rpms
+branch: main
+git_commit_user: cooonfig
+git_commit_email: cooonfig@siakhooi.github.io
+git_commit_message: "{repo_name}: {ref_name} | {commit_short}"
+
+files:
+  - source: dist/cooonfig-*.*.rpm
+    target: docs/
+    items: 3

@@ -1,0 +1,29 @@
+name: build
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_call:
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: ./.github/actions/setup
+
+      - run: scripts/ci.sh
+
+      - uses: ./.github/actions/analyze
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          qlty-coverage-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+
+      - run: scripts/build.sh
+
+      - run: scripts/goreleaser.sh snapshot
