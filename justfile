@@ -20,6 +20,7 @@ ci:
 
 # Cross-compile into bin/ and build snapshot archives into dist/
 build:
+    golangci-lint fmt
     scripts/build.sh
     scripts/goreleaser.sh snapshot
 
