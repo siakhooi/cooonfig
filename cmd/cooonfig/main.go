@@ -43,5 +43,5 @@ func action(_ context.Context, c *cli.Command) error {
 	if c.Args().Len() == 0 {
 		return cli.ShowAppHelp(c)
 	}
-	return nil
+	return Process()
 }
