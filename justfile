@@ -43,7 +43,7 @@ commit-watch:
 release-watch: release
     gh run watch
 
-binary := "bin/cooonfig-linux-amd64"
+binary := "bin/cooonfig-linux-arm64"
 
 # Show CLI help
 run-help:
