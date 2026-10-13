@@ -1,0 +1,4 @@
+{
+ "myValue" : "{{ .a.b}}",
+ "discussedValue":   "{{ .c }}"
+}
