@@ -16,29 +16,29 @@ func Process() error {
 
 	inputRaw, err := os.ReadFile(inputYaml)
 	if err != nil {
-		return fmt.Errorf("Fail to load input %s, %w", inputYaml, err)
+		return fmt.Errorf("fail to load input %s: %w", inputYaml, err)
 	}
 	var context map[string]any
 	err = yaml.Unmarshal(inputRaw, &context)
 	if err != nil {
-		return fmt.Errorf("Fail to unmarshal input %s, %w", inputYaml, err)
+		return fmt.Errorf("fail to unmarshal input %s: %w", inputYaml, err)
 	}
 	context["final"] = map[string]any{}
 
 	templateYaml := "template.yaml"
 	t, err := template.ParseFiles(templateYaml)
 	if err != nil {
-		return fmt.Errorf("Fail to load template %s, %w", templateYaml, err)
+		return fmt.Errorf("fail to load template %s: %w", templateYaml, err)
 	}
 
 	var model map[string]any
 	var buf bytes.Buffer
 	err = t.Execute(&buf, context)
 	if err != nil {
-		return fmt.Errorf("Fail to template %w", err)
+		return fmt.Errorf("fail to template %s: %w", templateYaml, err)
 	}
 	if err := yaml.Unmarshal(buf.Bytes(), &model); err != nil {
-		return fmt.Errorf("Fail to convert to model, %w", err)
+		return fmt.Errorf("fail to convert to model %s: %w", templateYaml, err)
 	}
 	merge(context["final"].(map[string]any), model)
 
