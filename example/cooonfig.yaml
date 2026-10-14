@@ -1,0 +1,4 @@
+inputs:
+  - name: input1 
+    path: input.yaml
+

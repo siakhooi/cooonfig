@@ -12,7 +12,9 @@ import (
 func merge(m1, m2 map[string]any) map[string]any {
 	return maps.Clone(m2)
 }
-func Process() error {
+func Process(configFile string) error {
+	fmt.Printf("configFile: %s\n", configFile)
+
 	inputYaml := "input.yaml"
 
 	inputRaw, err := os.ReadFile(inputYaml)
