@@ -45,14 +45,6 @@ release-watch: release
 
 binary := "bin/cooonfig-linux-arm64"
 
-# Show CLI help
-run-help:
-    {{ binary }} --help
-
-# Print the version
-run-version:
-    {{ binary }} --version
-
 # Run the CLI with the given arguments
 run *args:
-    {{ binary }} {{ args }}
+    cd example &&  ../{{ binary }} {{ args }}
