@@ -12,29 +12,19 @@ import (
 func merge(m1, m2 map[string]any) map[string]any {
 	return maps.Clone(m2)
 }
+
+const MODEL = "model"
+
 func Process(configFile string) error {
-	fmt.Printf("configFile: %s\n", configFile)
 
 	cfg, err := ReadConfig(configFile)
 	if err != nil {
 		return fmt.Errorf("fail to read Config %s: %w", configFile, err)
 	}
-	for _, input := range cfg.Inputs {
-		fmt.Printf("test read: %s:%s\n", input.Name, input.Path)
-	}
-
-	inputYaml := "input.yaml"
-
-	inputRaw, err := os.ReadFile(inputYaml)
+	context, err := ReadInputs(cfg.Inputs)
 	if err != nil {
-		return fmt.Errorf("fail to load input %s: %w", inputYaml, err)
+		return fmt.Errorf("fail to read input files: %w", err)
 	}
-	var context map[string]any
-	err = yaml.Unmarshal(inputRaw, &context)
-	if err != nil {
-		return fmt.Errorf("fail to unmarshal input %s: %w", inputYaml, err)
-	}
-	context["final"] = map[string]any{}
 
 	templateYaml := "template.yaml"
 	t, err := template.ParseFiles(templateYaml)
@@ -51,7 +41,7 @@ func Process(configFile string) error {
 	if err := yaml.Unmarshal(buf.Bytes(), &model); err != nil {
 		return fmt.Errorf("fail to convert to model %s: %w", templateYaml, err)
 	}
-	context["final"] = merge(context["final"].(map[string]any), model)
+	context[MODEL] = merge(context[MODEL].(map[string]any), model)
 
 	outputTemplateYaml := "output.json.template"
 	t1, err1 := template.ParseFiles(outputTemplateYaml)
@@ -63,9 +53,9 @@ func Process(configFile string) error {
 	if err != nil {
 		return fmt.Errorf("fail to open file %s: %w", outputFile, err)
 	}
-
-	fmt.Printf("model: %v\n", context["final"])
-	err = t1.Execute(file, context["final"])
+	b, err := yaml.Marshal(context[MODEL])
+	fmt.Printf("model:\n%v\n", string(b))
+	err = t1.Execute(file, context[MODEL])
 	if err != nil {
 		return fmt.Errorf("fail to render output template %s: %w", outputTemplateYaml, err)
 	}

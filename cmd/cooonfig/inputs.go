@@ -1,0 +1,36 @@
+package main
+
+import (
+	"fmt"
+	"gopkg.in/yaml.v3"
+	"os"
+)
+
+func ReadInputs(inputs []Input) (map[string]any, error) {
+
+	var context = map[string]any{}
+	context[MODEL] = map[string]any{}
+
+	for _, input := range inputs {
+
+		fmt.Printf("read input: %s: %s\n", input.Name, input.Path)
+
+		if context[input.Name] != nil {
+			return nil, fmt.Errorf("input name already exists or is a reserved word: %s", input.Name)
+		}
+		var inputContext map[string]any
+		inputYaml := input.Path
+
+		inputRaw, err := os.ReadFile(inputYaml)
+		if err != nil {
+			return nil, fmt.Errorf("fail to load input %s: %w", inputYaml, err)
+		}
+		err = yaml.Unmarshal(inputRaw, &inputContext)
+		if err != nil {
+			return nil, fmt.Errorf("fail to unmarshal input %s: %w", inputYaml, err)
+		}
+		context[input.Name] = inputContext
+
+	}
+	return context, nil
+}

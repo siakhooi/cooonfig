@@ -22,6 +22,7 @@ type Config struct {
 }
 
 func ReadConfig(configFile string) (Config, error) {
+	fmt.Printf("read config: %s\n", configFile)
 
 	configRaw, err := os.ReadFile(configFile)
 	if err != nil {
