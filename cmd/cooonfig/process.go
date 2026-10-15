@@ -19,7 +19,9 @@ func Process(configFile string) error {
 	if err != nil {
 		return fmt.Errorf("fail to read Config %s: %w", configFile, err)
 	}
-	fmt.Printf("test read: %s:%s\n", cfg.Inputs[0].Name, cfg.Inputs[0].Path)
+	for _, input := range cfg.Inputs {
+		fmt.Printf("test read: %s:%s\n", input.Name, input.Path)
+	}
 
 	inputYaml := "input.yaml"
 

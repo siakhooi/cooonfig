@@ -11,8 +11,14 @@ type Input struct {
 	Path string `yaml:"path"`
 	Type string `yaml:"type"`
 }
+type Output struct {
+	Template string `yaml:"template"`
+	OutFile  string `yaml:"outfile"`
+}
 type Config struct {
-	Inputs []Input `yaml:"inputs"`
+	Inputs  []Input  `yaml:"inputs"`
+	Models  []string `yaml:"models"`
+	Outputs []Output `yaml:"outputs"`
 }
 
 func ReadConfig(configFile string) (Config, error) {
@@ -25,7 +31,9 @@ func ReadConfig(configFile string) (Config, error) {
 	if err := yaml.Unmarshal(configRaw, &cfg); err != nil {
 		return Config{}, fmt.Errorf("fail to unmarshal config file %s: %w", configFile, err)
 	}
-
+	if cfg.Inputs == nil || len(cfg.Inputs) == 0 {
+		return Config{}, fmt.Errorf("input files not config %s", configFile)
+	}
 	for _, input := range cfg.Inputs {
 		if input.Type == "" {
 			input.Type = "yaml"

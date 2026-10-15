@@ -1,8 +1,8 @@
 inputs:
-  - name: input1 
-    path: input.yaml
-  - name: input2
-    path: input2.yaml
+  - name: app
+    path: application.yaml
+  - name: env 
+    path: environment.yaml
     type: yaml
 models:
   - core.yaml
@@ -10,7 +10,7 @@ models:
   - kubernetes.yaml
 outputs:
   - template: apache_config.xml
-    output: apache/config.xml
+    outfile: apache/config.xml
   - template: kafka_config.yml
-    output: kafka/config.yaml
+    outfile: kafka/config.yaml
 

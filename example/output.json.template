@@ -1,4 +1,7 @@
 {
- "myValue" : "{{ .a.b}}",
- "discussedValue":   "{{ .c }}"
+ "EnvironmentName": "{{ .env_name }}",
+ "EnvironmentHost": "{{ .env_host }}",
+ "ApplicationName": "{{ .app_name }}",
+ "ApplicationUrl": "{{ .app_url }}",
+ "ApplicationVersion": "{{ .app_version }}"
 }
