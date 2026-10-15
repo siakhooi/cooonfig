@@ -1,4 +1,13 @@
 inputs:
   - name: input1 
     path: input.yaml
+models:
+  - core.yaml
+  - default.yaml
+  - kubernetes.yaml
+outputs:
+  - template: apache_config.xml
+    output: apache/config.xml
+  - template: kafka_config.yml
+    output: kafka/config.yaml
 
