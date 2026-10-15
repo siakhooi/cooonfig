@@ -15,6 +15,12 @@ func merge(m1, m2 map[string]any) map[string]any {
 func Process(configFile string) error {
 	fmt.Printf("configFile: %s\n", configFile)
 
+	cfg, err := ReadConfig(configFile)
+	if err != nil {
+		return fmt.Errorf("fail to read Config %s: %w", configFile, err)
+	}
+	fmt.Printf("test read: %s:%s\n", cfg.Inputs[0].Name, cfg.Inputs[0].Path)
+
 	inputYaml := "input.yaml"
 
 	inputRaw, err := os.ReadFile(inputYaml)

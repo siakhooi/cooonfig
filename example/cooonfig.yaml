@@ -1,6 +1,9 @@
 inputs:
   - name: input1 
     path: input.yaml
+  - name: input2
+    path: input2.yaml
+    type: yaml
 models:
   - core.yaml
   - default.yaml
