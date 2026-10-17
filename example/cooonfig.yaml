@@ -9,8 +9,8 @@ models:
   - models/default.yaml
   - models/kubernetes.yaml
 outputs:
-  - template: templates/apache_config.xml
-    outfile: apache/config.xml
+  - template: templates/apache_config.json
+    outfile: apache/config.json
   - template: templates/kafka_config.yml
     outfile: kafka/config.yaml
 

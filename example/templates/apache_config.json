@@ -6,5 +6,5 @@
   "ApplicationVersion": "{{ .app_version }}",
   "WorkingDirectory": "{{ .working_directory }}",
   "TemporaryDirectory": "{{ .temp_directory }}",
-  "EnvironmentDirectory" "{{ .env_directory }}"
+  "EnvironmentDirectory": "{{ .env_directory }}"
 }
