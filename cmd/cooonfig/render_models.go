@@ -9,7 +9,7 @@ import (
 
 const MODEL = "model"
 
-func RenderModels(context map[string]any, modelFiles []string) (map[string]any, error) {
+func RenderModel(context map[string]any, modelFiles []string) (map[string]any, error) {
 	for _, modelFileName := range modelFiles {
 		templateYaml := modelFileName
 		t, err := template.ParseFiles(templateYaml)
