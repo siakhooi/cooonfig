@@ -9,7 +9,11 @@ import (
 
 func GenerateOutputs(model map[string]any, outputs []Output) error {
 	for _, output := range outputs {
+
+		fmt.Printf("render output: %s => %s\n", output.Template, output.OutFile)
+
 		templateFile := output.Template
+
 		t1, err := template.ParseFiles(templateFile)
 		if err != nil {
 			return fmt.Errorf("fail to load output template %s: %w", templateFile, err)
