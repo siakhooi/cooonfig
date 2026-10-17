@@ -3,5 +3,9 @@
  "EnvironmentHost": "{{ .env_host }}",
  "ApplicationName": "{{ .app_name }}",
  "ApplicationUrl": "{{ .app_url }}",
- "ApplicationVersion": "{{ .app_version }}"
+ "ApplicationVersion": "{{ .app_version }}",
+
+  "WorkingDirectory": "{{ .working_directory }}",
+  "TemporaryDirectory": "{{ .temp_directory }}",
+  "EnvironmentDirectory" "{{ .env_directory }}"
 }
