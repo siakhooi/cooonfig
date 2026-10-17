@@ -1,0 +1,3 @@
+working_directory: "./workspace/{{ .app_name }}"
+temp_directory: "/tmp"
+

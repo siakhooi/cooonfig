@@ -5,12 +5,12 @@ inputs:
     path: environment.yaml
     type: yaml
 models:
-  - core.yaml
-  - default.yaml
-  - kubernetes.yaml
+  - models/core.yaml
+  - models/default.yaml
+  - models/kubernetes.yaml
 outputs:
-  - template: apache_config.xml
+  - template: templates/apache_config.xml
     outfile: apache/config.xml
-  - template: kafka_config.yml
+  - template: templates/kafka_config.yml
     outfile: kafka/config.yaml
 
