@@ -32,7 +32,7 @@ func ReadConfig(configFile string) (Config, error) {
 	if err := yaml.Unmarshal(configRaw, &cfg); err != nil {
 		return Config{}, fmt.Errorf("fail to unmarshal config file %s: %w", configFile, err)
 	}
-	if cfg.Inputs == nil || len(cfg.Inputs) == 0 {
+	if len(cfg.Inputs) == 0 {
 		return Config{}, fmt.Errorf("input files not config %s", configFile)
 	}
 	for _, input := range cfg.Inputs {
