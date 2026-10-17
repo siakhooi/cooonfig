@@ -48,3 +48,4 @@ binary := "bin/cooonfig-linux-arm64"
 # Run the CLI with the given arguments
 run *args:
     cd example &&  ../{{ binary }} {{ args }}
+    cat example/output.json

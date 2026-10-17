@@ -26,7 +26,7 @@ func RenderModels(context map[string]any, modelFiles []string) (map[string]any, 
 		if err := yaml.Unmarshal(buf.Bytes(), &model); err != nil {
 			return nil, fmt.Errorf("fail to convert to model %s: %w", templateYaml, err)
 		}
-		context[MODEL] = merge(context[MODEL].(map[string]any), model)
+		DeepMerge(context[MODEL].(map[string]any), model)
 	}
 	return context[MODEL].(map[string]any), nil
 
