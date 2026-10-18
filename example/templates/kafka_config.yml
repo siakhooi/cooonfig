@@ -1,0 +1,11 @@
+Environmen:
+  Name: "{{ .env_name }}"
+  Host: "{{ .env_host }}"
+Application:
+  Name: "{{ .app_name }}"
+  Url: "{{ .app_url }}"
+  Version: "{{ .app_version }}"
+Directory:
+  Working: "{{ .working_directory }}"
+  Temporary: "{{ .temp_directory }}"
+  Environment: "{{ .env_directory }}"

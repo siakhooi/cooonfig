@@ -1,0 +1,4 @@
+app_name: {{ .app.name }}
+app_url: {{ .app.source.url }}
+app_version: {{ .app.version }}
+

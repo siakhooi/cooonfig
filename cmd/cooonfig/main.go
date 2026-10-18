@@ -34,14 +34,23 @@ func run(args []string) error {
 		Name:    "cooonfig",
 		Usage:   "transform config files",
 		Version: versionString(),
-		Action:  action,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "config",
+				Aliases: []string{"c"},
+				Value:   "./cooonfig.yaml",
+				Usage:   "path to the config file",
+			},
+		},
+		Action: action,
 	}
 	return cmd.Run(context.Background(), args)
 }
 
 func action(_ context.Context, c *cli.Command) error {
-	if c.Args().Len() == 0 {
+	if c.Args().Len() != 0 {
 		return cli.ShowAppHelp(c)
 	}
-	return nil
+	configFile := c.String("config")
+	return Process(configFile)
 }

@@ -1,0 +1,16 @@
+inputs:
+  - name: app
+    path: application.yaml
+  - name: env 
+    path: environment.yaml
+    type: yaml
+models:
+  - models/core.yaml
+  - models/default.yaml
+  - models/kubernetes.yaml
+outputs:
+  - template: templates/apache_config.json
+    outfile: apache/config.json
+  - template: templates/kafka_config.yml
+    outfile: kafka/config.yaml
+

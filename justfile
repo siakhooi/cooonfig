@@ -43,16 +43,10 @@ commit-watch:
 release-watch: release
     gh run watch
 
-binary := "bin/cooonfig-linux-amd64"
-
-# Show CLI help
-run-help:
-    {{ binary }} --help
-
-# Print the version
-run-version:
-    {{ binary }} --version
+binary := "bin/cooonfig-linux-arm64"
 
 # Run the CLI with the given arguments
 run *args:
-    {{ binary }} {{ args }}
+    cd example &&  ../{{ binary }} {{ args }}
+    cat example/apache/config.json
+    cat example/kafka/config.yaml
