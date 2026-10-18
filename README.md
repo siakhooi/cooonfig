@@ -11,6 +11,9 @@
 
 transform config files
 
+- using sprig functions
+- using several input files and models template, generate a model and use to render a list of templates into output files.
+
 ## Usage
 
 ```

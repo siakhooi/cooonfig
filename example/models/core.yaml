@@ -1,4 +1,7 @@
+{{ if not .app.name }}
+{{ fail "app.name is required" }}
+{{ end }}
 app_name: {{ .app.name }}
 app_url: {{ .app.source.url }}
-app_version: {{ .app.version }}
+app_version: {{ .app.version | default "0.1.0" }}
 
