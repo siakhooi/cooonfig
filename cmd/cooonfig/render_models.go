@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"gopkg.in/yaml.v3"
-	"text/template"
 )
 
 const MODEL = "model"
@@ -13,9 +12,9 @@ func RenderModel(context map[string]any, modelFiles []string) (map[string]any, e
 	for _, modelTemplate := range modelFiles {
 		fmt.Printf("read model: %s\n", modelTemplate)
 
-		t, err := template.ParseFiles(modelTemplate)
+		t, err := GetTemplate(modelTemplate)
 		if err != nil {
-			return nil, fmt.Errorf("fail to load template %s: %w", modelTemplate, err)
+			return nil, fmt.Errorf("fail to parse template %s: %w", modelTemplate, err)
 		}
 
 		var model map[string]any

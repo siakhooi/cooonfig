@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"text/template"
 )
 
 func GenerateOutputs(model map[string]any, outputs []Output) error {
@@ -14,7 +13,7 @@ func GenerateOutputs(model map[string]any, outputs []Output) error {
 
 		templateFile := output.Template
 
-		t1, err := template.ParseFiles(templateFile)
+		t, err := GetTemplate(templateFile)
 		if err != nil {
 			return fmt.Errorf("fail to load output template %s: %w", templateFile, err)
 		}
@@ -27,7 +26,7 @@ func GenerateOutputs(model map[string]any, outputs []Output) error {
 		if err != nil {
 			return fmt.Errorf("fail to open file %s: %w", outputFile, err)
 		}
-		err = t1.Execute(file, model)
+		err = t.Execute(file, model)
 		if err != nil {
 			return fmt.Errorf("fail to render output template %s: %w", templateFile, err)
 		}
