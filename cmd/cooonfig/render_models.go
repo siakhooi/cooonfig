@@ -4,15 +4,18 @@ import (
 	"bytes"
 	"fmt"
 	"gopkg.in/yaml.v3"
+	"path/filepath"
 )
 
 const MODEL = "model"
 
-func RenderModel(context map[string]any, modelFiles []string) (map[string]any, error) {
+func RenderModel(context map[string]any, modelFiles []string, modelDir string) (map[string]any, error) {
 	for _, modelTemplate := range modelFiles {
-		fmt.Printf("read model: %s\n", modelTemplate)
+		modelTemplatePath := filepath.Join(modelDir, modelTemplate)
 
-		t, err := GetTemplate(modelTemplate)
+		fmt.Printf("read model: %s\n", modelTemplatePath)
+
+		t, err := GetTemplate(modelTemplatePath)
 		if err != nil {
 			return nil, fmt.Errorf("fail to parse template %s: %w", modelTemplate, err)
 		}

@@ -1,5 +1,6 @@
 bin/
 *.log
+target/
 
 # Added by goreleaser init:
 dist/

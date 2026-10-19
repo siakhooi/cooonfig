@@ -41,6 +41,18 @@ func run(args []string) error {
 				Value:   "./cooonfig.yaml",
 				Usage:   "path to the config file",
 			},
+			&cli.StringFlag{
+				Name:    "input-dir",
+				Aliases: []string{"i"},
+				Value:   "./",
+				Usage:   "path to the input directory",
+			},
+			&cli.StringFlag{
+				Name:    "output-dir",
+				Aliases: []string{"o"},
+				Value:   "./",
+				Usage:   "path to the output directory",
+			},
 		},
 		Action: action,
 	}
@@ -52,5 +64,7 @@ func action(_ context.Context, c *cli.Command) error {
 		return cli.ShowAppHelp(c)
 	}
 	configFile := c.String("config")
-	return Process(configFile)
+	inputDir := c.String("input-dir")
+	outputDir := c.String("output-dir")
+	return Process(configFile, inputDir, outputDir)
 }
