@@ -17,7 +17,6 @@ test:
 # Lint and test
 ci:
     scripts/ci.sh
-
 # Cross-compile into bin/ and build snapshot archives into dist/
 build:
     golangci-lint fmt
@@ -34,14 +33,6 @@ release:
 # Build snapshot archives in dist/ without uploading
 go-release:
     scripts/goreleaser.sh snapshot
-
-# Watch the current GitHub Actions run
-commit-watch:
-    gh run watch
-
-# Create a GitHub release and watch the Actions run
-release-watch: release
-    gh run watch
 
 binary := "bin/cooonfig-linux-arm64"
 

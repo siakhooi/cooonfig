@@ -1,36 +1,38 @@
-package main
+package cooonfig
 
 import (
 	"bytes"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"path/filepath"
 )
 
-const MODEL = "model"
+const model = "model"
 
-func RenderModel(context map[string]any, modelFiles []string, modelDir string) (map[string]any, error) {
+func renderModel(context map[string]any, modelFiles []string, modelDir string) (map[string]any, error) {
+	modelMap := map[string]any{}
+
 	for _, modelTemplate := range modelFiles {
 		modelTemplatePath := filepath.Join(modelDir, modelTemplate)
 
 		fmt.Printf("read model: %s\n", modelTemplatePath)
 
-		t, err := GetTemplate(modelTemplatePath)
+		t, err := getTemplate(modelTemplatePath)
 		if err != nil {
 			return nil, fmt.Errorf("get template %q: %w", modelTemplate, err)
 		}
 
+		context[model] = modelMap
 		var model map[string]any
 		var buf bytes.Buffer
 		err = t.Execute(&buf, context)
 		if err != nil {
 			return nil, fmt.Errorf("execute template %q: %w", modelTemplate, err)
 		}
-		if err := yaml.Unmarshal(buf.Bytes(), &model); err != nil {
-			return nil, fmt.Errorf("unmarshal %q: %w", modelTemplate, err)
+		if err := unmarshalYaml(modelTemplate, buf.Bytes(), &model); err != nil {
+			return nil, err
 		}
-		DeepMerge(context[MODEL].(map[string]any), model)
+		deepMerge(modelMap, model)
 	}
-	return context[MODEL].(map[string]any), nil
+	return modelMap, nil
 
 }

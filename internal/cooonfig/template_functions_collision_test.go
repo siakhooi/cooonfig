@@ -1,8 +1,9 @@
-package main
+package cooonfig
 
 import (
-	"github.com/Masterminds/sprig/v3"
 	"testing"
+
+	"github.com/Masterminds/sprig/v3"
 )
 
 func TestSprigDoesNotDefineRequired(t *testing.T) {

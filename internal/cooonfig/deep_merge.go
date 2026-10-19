@@ -1,6 +1,6 @@
-package main
+package cooonfig
 
-func DeepMerge(dst, src map[string]any) {
+func deepMerge(dst, src map[string]any) {
 	for key, srcValue := range src {
 		dstValue, exists := dst[key]
 		if !exists {
@@ -11,7 +11,7 @@ func DeepMerge(dst, src map[string]any) {
 		srcMap, srcIsMap := srcValue.(map[string]any)
 
 		if dstIsMap && srcIsMap {
-			DeepMerge(dstMap, srcMap)
+			deepMerge(dstMap, srcMap)
 		} else {
 			// new value, overrides
 			dst[key] = srcValue
