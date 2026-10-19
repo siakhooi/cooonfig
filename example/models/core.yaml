@@ -2,6 +2,5 @@
 {{ fail "app.name is required" }}
 {{ end }}
 app_name: {{ .app.name }}
-app_url: {{ .app.source.url }}
+app_url: {{ required ".app.source.url is required" .app.source.url }}
 app_version: {{ .app.version | default "0.1.0" }}
-

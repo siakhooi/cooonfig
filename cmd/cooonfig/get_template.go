@@ -7,7 +7,11 @@ import (
 )
 
 func GetTemplate(templateFilename string) (*template.Template, error) {
+	funcMap := sprig.TxtFuncMap()
+
+	funcMap["required"] = templateFunctionRequired
+
 	return template.New(filepath.Base(templateFilename)).
-		Funcs(sprig.TxtFuncMap()).
+		Funcs(funcMap).
 		ParseFiles(templateFilename)
 }
