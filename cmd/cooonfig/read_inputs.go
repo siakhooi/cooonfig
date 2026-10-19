@@ -14,13 +14,13 @@ func ReadInputs(inputs []Input, inputDir string) (map[string]any, error) {
 
 	for _, input := range inputs {
 
-		fmt.Printf("read input: %s: %s\n", input.Name, input.Path)
+		inputYaml := filepath.Join(inputDir, input.Path)
+		fmt.Printf("read input: %s: %s\n", input.Name, inputYaml)
 
 		if context[input.Name] != nil {
 			return nil, fmt.Errorf("input name already exists or is a reserved word: %s", input.Name)
 		}
 		var inputContext map[string]any
-		inputYaml := filepath.Join(inputDir, input.Path)
 
 		inputRaw, err := os.ReadFile(inputYaml)
 		if err != nil {

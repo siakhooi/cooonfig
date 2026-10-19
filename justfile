@@ -4,7 +4,7 @@ default:
 
 # Remove build outputs
 clean:
-    rm -rf bin dist test-report.json test-coverage.out test-coverage.html
+    rm -rf bin dist test-report.json test-coverage.out test-coverage.html target/
 
 # Run golangci-lint
 golangci-lint:
@@ -50,7 +50,7 @@ run *args:
     {{ binary }} {{ args }}
 
 run-1:
-    {{ binary }} --config example/cooonfig.yaml
-    cat example/apache/config.json
-    cat example/kafka/config.yaml
+    {{ binary }} --config example/cooonfig.yaml --input-dir example --output-dir target
+    cat target/apache/config.json
+    cat target/kafka/config.yaml
 

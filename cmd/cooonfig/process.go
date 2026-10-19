@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func Process(configFile string) error {
+func Process(configFile, inputDir, outputDir string) error {
 
 	cfg, err := ReadConfig(configFile)
 	if err != nil {
@@ -13,10 +13,8 @@ func Process(configFile string) error {
 	}
 
 	configDir := filepath.Dir(configFile)
-	inputDir := configDir
 	modelDir := configDir
 	templateDir := configDir
-	outputDir := configDir
 
 	context, err := ReadInputs(cfg.Inputs, inputDir)
 	if err != nil {
