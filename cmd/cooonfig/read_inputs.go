@@ -20,6 +20,10 @@ func ReadInputs(inputs []Input, inputDir string) (map[string]any, error) {
 		if context[input.Name] != nil {
 			return nil, fmt.Errorf("input name already exists or is a reserved word: %s", input.Name)
 		}
+		if input.Type != inputTypeYaml {
+			return nil, fmt.Errorf("invalid type %s: %s", input.Name, input.Type)
+		}
+
 		var inputContext map[string]any
 
 		inputRaw, err := os.ReadFile(inputYaml)

@@ -21,6 +21,19 @@ type Config struct {
 	Outputs []Output `yaml:"outputs"`
 }
 
+const inputTypeYaml = "yaml"
+
+func normalizeInputs(inputs []Input) error {
+	for i := range inputs {
+		if inputs[i].Type == "" {
+			inputs[i].Type = inputTypeYaml
+		} else if inputs[i].Type != inputTypeYaml {
+			return fmt.Errorf("invalid type %s: %s", inputs[i].Name, inputs[i].Type)
+		}
+	}
+	return nil
+}
+
 func ReadConfig(configFile string) (Config, error) {
 	fmt.Printf("read config: %s\n", configFile)
 
@@ -35,13 +48,10 @@ func ReadConfig(configFile string) (Config, error) {
 	if len(cfg.Inputs) == 0 {
 		return Config{}, fmt.Errorf("missing input files %q", configFile)
 	}
-	for _, input := range cfg.Inputs {
-		if input.Type == "" {
-			input.Type = "yaml"
-		} else if input.Type != "yaml" {
-			return Config{}, fmt.Errorf("invalid type %s: %s", input.Name, input.Type)
-		}
+	if err := normalizeInputs(cfg.Inputs); err != nil {
+		return Config{}, err
 	}
+
 	return cfg, nil
 
 }

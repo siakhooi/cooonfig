@@ -29,7 +29,11 @@ func GenerateOutputs(model map[string]any, outputs []Output, templateDir, output
 		}
 		err = t.Execute(file, model)
 		if err != nil {
+			_ = file.Close()
 			return fmt.Errorf("execute template %q: %w", templateFile, err)
+		}
+		if err := file.Close(); err != nil {
+			return fmt.Errorf("close file %q: %w", outputFile, err)
 		}
 
 	}
