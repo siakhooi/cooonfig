@@ -17,7 +17,8 @@ test:
 # Lint and test
 ci:
     scripts/ci.sh
-
+format:
+    golangci-lint fmt
 # Cross-compile into bin/ and build snapshot archives into dist/
 build:
     golangci-lint fmt

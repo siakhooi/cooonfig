@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
-
-	"gopkg.in/yaml.v3"
 )
 
 const model = "model"
@@ -30,8 +28,8 @@ func renderModel(context map[string]any, modelFiles []string, modelDir string) (
 		if err != nil {
 			return nil, fmt.Errorf("execute template %q: %w", modelTemplate, err)
 		}
-		if err := yaml.Unmarshal(buf.Bytes(), &model); err != nil {
-			return nil, fmt.Errorf("unmarshal %q: %w", modelTemplate, err)
+		if err := unmarshalYaml(modelTemplate, buf.Bytes(), &model); err != nil {
+			return nil, err
 		}
 		deepMerge(modelMap, model)
 	}
