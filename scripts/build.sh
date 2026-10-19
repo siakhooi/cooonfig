@@ -24,5 +24,16 @@ build() {
 while read -r goos goarch extension; do
   build "${goos}" "${goarch}" "${extension}"
 done <<'EOF'
+linux amd64
 linux arm64
+windows amd64 .exe
+windows 386 .exe
+darwin amd64
+darwin arm64
+freebsd amd64
+freebsd arm64
+netbsd amd64
+netbsd arm64
+openbsd amd64
+openbsd arm64
 EOF
