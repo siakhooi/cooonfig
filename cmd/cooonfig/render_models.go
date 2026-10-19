@@ -10,6 +10,8 @@ import (
 const MODEL = "model"
 
 func RenderModel(context map[string]any, modelFiles []string, modelDir string) (map[string]any, error) {
+	modelMap := map[string]any{}
+
 	for _, modelTemplate := range modelFiles {
 		modelTemplatePath := filepath.Join(modelDir, modelTemplate)
 
@@ -20,6 +22,7 @@ func RenderModel(context map[string]any, modelFiles []string, modelDir string) (
 			return nil, fmt.Errorf("get template %q: %w", modelTemplate, err)
 		}
 
+		context[MODEL] = modelMap
 		var model map[string]any
 		var buf bytes.Buffer
 		err = t.Execute(&buf, context)
@@ -29,8 +32,8 @@ func RenderModel(context map[string]any, modelFiles []string, modelDir string) (
 		if err := yaml.Unmarshal(buf.Bytes(), &model); err != nil {
 			return nil, fmt.Errorf("unmarshal %q: %w", modelTemplate, err)
 		}
-		DeepMerge(context[MODEL].(map[string]any), model)
+		DeepMerge(modelMap, model)
 	}
-	return context[MODEL].(map[string]any), nil
+	return modelMap, nil
 
 }
