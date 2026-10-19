@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
+	"path/filepath"
 )
 
-func ReadInputs(inputs []Input) (map[string]any, error) {
+func ReadInputs(inputs []Input, inputDir string) (map[string]any, error) {
 
 	var context = map[string]any{}
 	context[MODEL] = map[string]any{}
@@ -19,7 +20,7 @@ func ReadInputs(inputs []Input) (map[string]any, error) {
 			return nil, fmt.Errorf("input name already exists or is a reserved word: %s", input.Name)
 		}
 		var inputContext map[string]any
-		inputYaml := input.Path
+		inputYaml := filepath.Join(inputDir, input.Path)
 
 		inputRaw, err := os.ReadFile(inputYaml)
 		if err != nil {

@@ -6,18 +6,18 @@ import (
 	"path/filepath"
 )
 
-func GenerateOutputs(model map[string]any, outputs []Output) error {
+func GenerateOutputs(model map[string]any, outputs []Output, templateDir, outputDir string) error {
 	for _, output := range outputs {
 
 		fmt.Printf("render output: %s => %s\n", output.Template, output.OutFile)
 
-		templateFile := output.Template
+		templateFile := filepath.Join(templateDir, output.Template)
 
 		t, err := GetTemplate(templateFile)
 		if err != nil {
 			return fmt.Errorf("fail to load output template %s: %w", templateFile, err)
 		}
-		outputFile := output.OutFile
+		outputFile := filepath.Join(outputDir, output.OutFile)
 		dir := filepath.Dir(outputFile)
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return fmt.Errorf("failed to create directory %q: %w", dir, err)

@@ -47,6 +47,10 @@ binary := "bin/cooonfig-linux-arm64"
 
 # Run the CLI with the given arguments
 run *args:
-    cd example &&  ../{{ binary }} {{ args }}
+    {{ binary }} {{ args }}
+
+run-1:
+    {{ binary }} --config example/cooonfig.yaml
     cat example/apache/config.json
     cat example/kafka/config.yaml
+
