@@ -24,11 +24,11 @@ func ReadInputs(inputs []Input, inputDir string) (map[string]any, error) {
 
 		inputRaw, err := os.ReadFile(inputYaml)
 		if err != nil {
-			return nil, fmt.Errorf("fail to load input %s: %w", inputYaml, err)
+			return nil, fmt.Errorf("read file %q: %w", inputYaml, err)
 		}
 		err = yaml.Unmarshal(inputRaw, &inputContext)
 		if err != nil {
-			return nil, fmt.Errorf("fail to unmarshal input %s: %w", inputYaml, err)
+			return nil, fmt.Errorf("unmarshal %q: %w", inputYaml, err)
 		}
 		context[input.Name] = inputContext
 
