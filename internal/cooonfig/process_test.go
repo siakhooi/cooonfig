@@ -77,8 +77,8 @@ outputs:
   - template: templates/out.txt
     outfile: out.txt
 `, map[string]string{
-			"models/m.yaml":       "k: v\n",
-			"templates/out.txt":   "ok\n",
+			"models/m.yaml":     "k: v\n",
+			"templates/out.txt": "ok\n",
 		})
 
 		err := Process(configPath, dir, t.TempDir())
