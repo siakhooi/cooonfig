@@ -21,15 +21,44 @@ type config struct {
 
 const inputTypeYaml = "yaml"
 
+func isReserved(name string) bool {
+	return name == model
+}
 func normalizeInputs(inputs []input) error {
+	nameUsed := make(map[string]struct{}, len(inputs))
 	for i := range inputs {
+		if isReserved(inputs[i].Name) {
+			return fmt.Errorf("input name is a reserved: %s", inputs[i].Name)
+		}
+		if _, exists := nameUsed[inputs[i].Name]; exists {
+			return fmt.Errorf("input name already exists: %s", inputs[i].Name)
+		}
 		if inputs[i].Type == "" {
 			inputs[i].Type = inputTypeYaml
 		} else if inputs[i].Type != inputTypeYaml {
 			return fmt.Errorf("invalid type %s: %s", inputs[i].Name, inputs[i].Type)
 		}
+		nameUsed[inputs[i].Name] = struct{}{}
 	}
 	return nil
+}
+
+func validateConfig(configFile string, cfg config) error {
+	if len(cfg.Inputs) == 0 {
+		return fmt.Errorf("missing input files %q", configFile)
+	}
+	if len(cfg.Models) == 0 {
+		return fmt.Errorf("missing model files %q", configFile)
+	}
+	if len(cfg.Outputs) == 0 {
+		return fmt.Errorf("missing output files %q", configFile)
+	}
+	if err := normalizeInputs(cfg.Inputs); err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func readConfig(configFile string) (config, error) {
@@ -39,11 +68,7 @@ func readConfig(configFile string) (config, error) {
 	if err := readYaml(configFile, &cfg); err != nil {
 		return config{}, err
 	}
-
-	if len(cfg.Inputs) == 0 {
-		return config{}, fmt.Errorf("missing input files %q", configFile)
-	}
-	if err := normalizeInputs(cfg.Inputs); err != nil {
+	if err := validateConfig(configFile, cfg); err != nil {
 		return config{}, err
 	}
 
