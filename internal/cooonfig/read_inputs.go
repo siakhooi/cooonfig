@@ -2,10 +2,8 @@ package cooonfig
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 
-	"gopkg.in/yaml.v3"
+	"path/filepath"
 )
 
 func isReserved(name string) bool {
@@ -22,7 +20,6 @@ func readInputs(inputs []input, inputDir string) (map[string]any, error) {
 		if isReserved(input.Name) {
 			return nil, fmt.Errorf("input name is a reserved: %s", input.Name)
 		}
-
 		if context[input.Name] != nil {
 			return nil, fmt.Errorf("input name already exists: %s", input.Name)
 		}
@@ -32,13 +29,8 @@ func readInputs(inputs []input, inputDir string) (map[string]any, error) {
 
 		var inputContext map[string]any
 
-		inputRaw, err := os.ReadFile(inputYaml)
-		if err != nil {
-			return nil, fmt.Errorf("read file %q: %w", inputYaml, err)
-		}
-		err = yaml.Unmarshal(inputRaw, &inputContext)
-		if err != nil {
-			return nil, fmt.Errorf("unmarshal %q: %w", inputYaml, err)
+		if err := readYaml(inputYaml, &inputContext); err != nil {
+			return nil, err
 		}
 		context[input.Name] = inputContext
 

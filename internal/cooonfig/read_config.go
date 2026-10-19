@@ -2,9 +2,6 @@ package cooonfig
 
 import (
 	"fmt"
-	"os"
-
-	"gopkg.in/yaml.v3"
 )
 
 type input struct {
@@ -38,14 +35,11 @@ func normalizeInputs(inputs []input) error {
 func readConfig(configFile string) (config, error) {
 	fmt.Printf("read config: %s\n", configFile)
 
-	configRaw, err := os.ReadFile(configFile)
-	if err != nil {
+	cfg := config{}
+	if err := readYaml(configFile, &cfg); err != nil {
 		return config{}, err
 	}
-	cfg := config{}
-	if err := yaml.Unmarshal(configRaw, &cfg); err != nil {
-		return config{}, fmt.Errorf("unmarshal %q: %w", configFile, err)
-	}
+
 	if len(cfg.Inputs) == 0 {
 		return config{}, fmt.Errorf("missing input files %q", configFile)
 	}
