@@ -7,10 +7,15 @@ import (
 	"github.com/Masterminds/sprig/v3"
 )
 
-func getTemplate(templateFilename string) (*template.Template, error) {
+func buildTemplateFunctionMap() template.FuncMap {
 	funcMap := sprig.TxtFuncMap()
 
 	funcMap["required"] = templateFunctionRequired
+
+	return funcMap
+}
+func getTemplate(templateFilename string) (*template.Template, error) {
+	funcMap := buildTemplateFunctionMap()
 
 	return template.New(filepath.Base(templateFilename)).
 		Funcs(funcMap).
