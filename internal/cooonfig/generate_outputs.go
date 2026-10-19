@@ -2,9 +2,14 @@ package cooonfig
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 )
+
+var openOutputFile = func(path string) (io.WriteCloser, error) {
+	return os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+}
 
 func generateOutputs(model map[string]any, outputs []output, templateDir, outputDir string) error {
 	for _, output := range outputs {
@@ -23,7 +28,7 @@ func generateOutputs(model map[string]any, outputs []output, templateDir, output
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return err
 		}
-		file, err := os.OpenFile(outputFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+		file, err := openOutputFile(outputFile)
 		if err != nil {
 			return fmt.Errorf("open file %q: %w", outputFile, err)
 		}

@@ -1,11 +1,26 @@
 package cooonfig
 
 import (
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
+
+type errOnCloseFile struct {
+	inner io.WriteCloser
+}
+
+func (f *errOnCloseFile) Write(p []byte) (int, error) {
+	return f.inner.Write(p)
+}
+
+func (f *errOnCloseFile) Close() error {
+	_ = f.inner.Close()
+	return fmt.Errorf("close failed")
+}
 
 func writeOutputTemplate(t *testing.T, dir, name, content string) {
 	t.Helper()
@@ -97,6 +112,35 @@ func TestGenerateOutputs(t *testing.T) {
 			t.Fatal("expected error")
 		}
 		if !strings.Contains(err.Error(), "execute template") {
+			t.Fatalf("err = %v", err)
+		}
+	})
+
+	t.Run("close file failure", func(t *testing.T) {
+		templateDir := t.TempDir()
+		outputDir := t.TempDir()
+		writeOutputTemplate(t, templateDir, "out.txt", "ok\n")
+
+		origOpen := openOutputFile
+		openOutputFile = func(path string) (io.WriteCloser, error) {
+			f, err := origOpen(path)
+			if err != nil {
+				return nil, err
+			}
+			return &errOnCloseFile{inner: f}, nil
+		}
+		t.Cleanup(func() { openOutputFile = origOpen })
+
+		err := generateOutputs(
+			map[string]any{},
+			[]output{{Template: "out.txt", OutFile: "out.txt"}},
+			templateDir,
+			outputDir,
+		)
+		if err == nil {
+			t.Fatal("expected error")
+		}
+		if !strings.Contains(err.Error(), "close file") {
 			t.Fatalf("err = %v", err)
 		}
 	})
