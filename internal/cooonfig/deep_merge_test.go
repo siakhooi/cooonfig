@@ -115,7 +115,7 @@ func TestDeepMerge(t *testing.T) {
 		src := map[string]any{
 			"l1": map[string]any{
 				"l2": map[string]any{
-					"leaf": "src",
+					"leaf":  "src",
 					"extra": 9,
 				},
 			},
