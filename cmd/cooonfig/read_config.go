@@ -26,14 +26,14 @@ func ReadConfig(configFile string) (Config, error) {
 
 	configRaw, err := os.ReadFile(configFile)
 	if err != nil {
-		return Config{}, fmt.Errorf("fail to read config file %s: %w", configFile, err)
+		return Config{}, err
 	}
 	cfg := Config{}
 	if err := yaml.Unmarshal(configRaw, &cfg); err != nil {
-		return Config{}, fmt.Errorf("fail to unmarshal config file %s: %w", configFile, err)
+		return Config{}, fmt.Errorf("unmarshal %q: %w", configFile, err)
 	}
 	if len(cfg.Inputs) == 0 {
-		return Config{}, fmt.Errorf("input files not config %s", configFile)
+		return Config{}, fmt.Errorf("missing input files %q", configFile)
 	}
 	for _, input := range cfg.Inputs {
 		if input.Type == "" {

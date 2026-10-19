@@ -16,20 +16,20 @@ func GenerateOutputs(model map[string]any, outputs []Output, templateDir, output
 
 		t, err := GetTemplate(templateFile)
 		if err != nil {
-			return fmt.Errorf("fail to load output template %s: %w", templateFile, err)
+			return fmt.Errorf("get template %q: %w", templateFile, err)
 		}
 
 		dir := filepath.Dir(outputFile)
 		if err := os.MkdirAll(dir, 0755); err != nil {
-			return fmt.Errorf("failed to create directory %q: %w", dir, err)
+			return err
 		}
 		file, err := os.OpenFile(outputFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 		if err != nil {
-			return fmt.Errorf("fail to open file %s: %w", outputFile, err)
+			return fmt.Errorf("open file %q: %w", outputFile, err)
 		}
 		err = t.Execute(file, model)
 		if err != nil {
-			return fmt.Errorf("fail to render output template %s: %w", templateFile, err)
+			return fmt.Errorf("execute template %q: %w", templateFile, err)
 		}
 
 	}
