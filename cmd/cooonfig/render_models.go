@@ -11,9 +11,9 @@ const MODEL = "model"
 
 func RenderModel(context map[string]any, modelFiles []string, modelDir string) (map[string]any, error) {
 	for _, modelTemplate := range modelFiles {
-		fmt.Printf("read model: %s\n", modelTemplate)
-
 		modelTemplatePath := filepath.Join(modelDir, modelTemplate)
+
+		fmt.Printf("read model: %s\n", modelTemplatePath)
 
 		t, err := GetTemplate(modelTemplatePath)
 		if err != nil {
