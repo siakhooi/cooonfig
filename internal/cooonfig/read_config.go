@@ -1,29 +1,30 @@
-package main
+package cooonfig
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
+
+	"gopkg.in/yaml.v3"
 )
 
-type Input struct {
+type input struct {
 	Name string `yaml:"name"`
 	Path string `yaml:"path"`
 	Type string `yaml:"type"`
 }
-type Output struct {
+type output struct {
 	Template string `yaml:"template"`
 	OutFile  string `yaml:"outfile"`
 }
-type Config struct {
-	Inputs  []Input  `yaml:"inputs"`
+type config struct {
+	Inputs  []input  `yaml:"inputs"`
 	Models  []string `yaml:"models"`
-	Outputs []Output `yaml:"outputs"`
+	Outputs []output `yaml:"outputs"`
 }
 
 const inputTypeYaml = "yaml"
 
-func normalizeInputs(inputs []Input) error {
+func normalizeInputs(inputs []input) error {
 	for i := range inputs {
 		if inputs[i].Type == "" {
 			inputs[i].Type = inputTypeYaml
@@ -34,22 +35,22 @@ func normalizeInputs(inputs []Input) error {
 	return nil
 }
 
-func ReadConfig(configFile string) (Config, error) {
+func readConfig(configFile string) (config, error) {
 	fmt.Printf("read config: %s\n", configFile)
 
 	configRaw, err := os.ReadFile(configFile)
 	if err != nil {
-		return Config{}, err
+		return config{}, err
 	}
-	cfg := Config{}
+	cfg := config{}
 	if err := yaml.Unmarshal(configRaw, &cfg); err != nil {
-		return Config{}, fmt.Errorf("unmarshal %q: %w", configFile, err)
+		return config{}, fmt.Errorf("unmarshal %q: %w", configFile, err)
 	}
 	if len(cfg.Inputs) == 0 {
-		return Config{}, fmt.Errorf("missing input files %q", configFile)
+		return config{}, fmt.Errorf("missing input files %q", configFile)
 	}
 	if err := normalizeInputs(cfg.Inputs); err != nil {
-		return Config{}, err
+		return config{}, err
 	}
 
 	return cfg, nil

@@ -1,16 +1,17 @@
-package main
+package cooonfig
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
+
+	"gopkg.in/yaml.v3"
 )
 
 func isReserved(name string) bool {
-	return name == MODEL
+	return name == model
 }
-func ReadInputs(inputs []Input, inputDir string) (map[string]any, error) {
+func readInputs(inputs []input, inputDir string) (map[string]any, error) {
 
 	context := map[string]any{}
 	for _, input := range inputs {

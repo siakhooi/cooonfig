@@ -1,4 +1,4 @@
-package main
+package cooonfig
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ func TestDeepMerge(t *testing.T) {
 		"newString": "StringValue",
 		"newInt":    4,
 	}
-	DeepMerge(dest, src)
+	deepMerge(dest, src)
 	if dest["newString"] == nil {
 		t.Fatalf("fail")
 	}

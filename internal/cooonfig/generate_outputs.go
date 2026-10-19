@@ -1,4 +1,4 @@
-package main
+package cooonfig
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func GenerateOutputs(model map[string]any, outputs []Output, templateDir, outputDir string) error {
+func generateOutputs(model map[string]any, outputs []output, templateDir, outputDir string) error {
 	for _, output := range outputs {
 
 		templateFile := filepath.Join(templateDir, output.Template)
@@ -14,7 +14,7 @@ func GenerateOutputs(model map[string]any, outputs []Output, templateDir, output
 
 		fmt.Printf("render output: %s => %s\n", templateFile, outputFile)
 
-		t, err := GetTemplate(templateFile)
+		t, err := getTemplate(templateFile)
 		if err != nil {
 			return fmt.Errorf("get template %q: %w", templateFile, err)
 		}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/siakhooi/cooonfig/internal/cooonfig"
 	"github.com/urfave/cli/v3"
 )
 
@@ -66,5 +67,5 @@ func action(_ context.Context, c *cli.Command) error {
 	configFile := c.String("config")
 	inputDir := c.String("input-dir")
 	outputDir := c.String("output-dir")
-	return Process(configFile, inputDir, outputDir)
+	return cooonfig.Process(configFile, inputDir, outputDir)
 }

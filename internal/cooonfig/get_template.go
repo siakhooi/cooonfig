@@ -1,12 +1,13 @@
-package main
+package cooonfig
 
 import (
-	"github.com/Masterminds/sprig/v3"
 	"path/filepath"
 	"text/template"
+
+	"github.com/Masterminds/sprig/v3"
 )
 
-func GetTemplate(templateFilename string) (*template.Template, error) {
+func getTemplate(templateFilename string) (*template.Template, error) {
 	funcMap := sprig.TxtFuncMap()
 
 	funcMap["required"] = templateFunctionRequired
