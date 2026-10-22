@@ -13,4 +13,8 @@ outputs:
     outfile: apache/config.json
   - template: templates/kafka_config.yml
     outfile: kafka/config.yaml
+  - template: templates/all.json
+    outfile: all.json
+  - template: templates/all.yaml
+    outfile: all.yaml
 
