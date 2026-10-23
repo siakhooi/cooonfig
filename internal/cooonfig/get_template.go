@@ -11,6 +11,7 @@ func buildTemplateFunctionMap() template.FuncMap {
 	funcMap := sprig.TxtFuncMap()
 
 	funcMap["required"] = templateFunctionRequired
+	funcMap["toYaml"] = templateFunctionToYaml
 
 	return funcMap
 }

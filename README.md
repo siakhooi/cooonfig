@@ -11,7 +11,7 @@
 
 cooonfig renders configuration files from named YAML inputs. It builds one model by rendering an ordered list of model templates, then renders that model through a list of output templates.
 
-Templates are Go `text/template` files with [Sprig](https://masterminds.github.io/sprig/) functions, plus a `required` function.
+Templates are Go `text/template` files with [Sprig](https://masterminds.github.io/sprig/) functions, plus `required` and `toYaml`.
 
 ## Install
 
@@ -81,7 +81,16 @@ Name: "{{ .app_name }}"
 Host: "{{ .env_host }}"
 ```
 
-`required` returns an error when its value is nil or an empty string. Sprig's `fail` and `default` work the same way as in any Sprig text template.
+`required` returns an error when its value is nil or an empty string.
+
+`toYaml` marshals its argument to YAML. Map keys are sorted, nested values are indented four spaces, and the result ends with a newline:
+
+```yaml
+source:
+{{ toYaml .app.source | nindent 2 }}
+```
+
+Sprig's `fail`, `default`, and `nindent` work the same way as in any Sprig text template.
 
 ## Development
 
