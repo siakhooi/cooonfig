@@ -64,6 +64,9 @@ func TestBuildTemplateFunctionMap(t *testing.T) {
 	if _, ok := funcMap["required"]; !ok {
 		t.Fatal("custom required missing")
 	}
+	if _, ok := funcMap["toYaml"]; !ok {
+		t.Fatal("custom toYaml missing")
+	}
 	if _, ok := funcMap["upper"]; !ok {
 		t.Fatal("sprig upper missing")
 	}
