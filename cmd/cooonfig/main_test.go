@@ -81,6 +81,60 @@ func TestRunNoArgsProcesses(t *testing.T) {
 	}
 }
 
+func TestRunNoArgsMissingConfigShowsHelp(t *testing.T) {
+	t.Chdir(t.TempDir())
+
+	output := captureStdout(t, func() {
+		if err := run([]string{"cooonfig"}); err != nil {
+			t.Fatalf("no args: %v", err)
+		}
+	})
+	if !strings.Contains(output, "--help") || !strings.Contains(output, "--version") {
+		t.Fatalf("expected help, got %q", output)
+	}
+}
+
+func TestRunNoArgsExistingConfigProcesses(t *testing.T) {
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "cooonfig.yaml"), nil, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	t.Chdir(dir)
+
+	var err error
+	output := captureStdout(t, func() {
+		err = run([]string{"cooonfig"})
+	})
+	if err == nil || !strings.Contains(err.Error(), "missing input files") {
+		t.Fatalf("err = %v", err)
+	}
+	if strings.Contains(output, "--version") {
+		t.Fatalf("expected processing, got help %q", output)
+	}
+}
+
+func TestRunNoArgsStatError(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("directory mode is ignored for root")
+	}
+
+	dir := t.TempDir()
+	t.Chdir(dir)
+	t.Cleanup(func() {
+		if err := os.Chmod(dir, 0o755); err != nil {
+			t.Errorf("restore permissions: %v", err)
+		}
+	})
+	if err := os.Chmod(dir, 0); err != nil {
+		t.Fatal(err)
+	}
+
+	err := run([]string{"cooonfig"})
+	if err == nil || !os.IsPermission(err) {
+		t.Fatalf("err = %v, want permission error", err)
+	}
+}
+
 func TestRunWithArgsShowsHelp(t *testing.T) {
 	output := captureStdout(t, func() {
 		if err := run([]string{"cooonfig", "anything"}); err != nil {

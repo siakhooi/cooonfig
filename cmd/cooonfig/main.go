@@ -57,6 +57,14 @@ func run(args []string) error {
 		},
 		Action: action,
 	}
+	if len(args) == 1 {
+		if _, err := os.Stat("./cooonfig.yaml"); os.IsNotExist(err) {
+			args = append(args, "--help")
+		} else if err != nil {
+			return err
+		}
+	}
+
 	return cmd.Run(context.Background(), args)
 }
 
