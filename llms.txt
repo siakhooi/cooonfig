@@ -1,0 +1,211 @@
+# cooonfig
+
+> cooonfig builds one YAML model from ordered model templates, then renders that model through output templates into config files. Model templates see named inputs and the model so far (`.model`). Output templates see only the finished model.
+
+Read this file before writing `cooonfig.yaml`, input YAML, model templates, or output templates. `example/` shows the pipeline: named inputs, ordered model files, then one output template per file. Those example templates often print strings unquoted; follow the quoting rules below when writing new templates. Sprig text functions are available in every template: https://masterminds.github.io/sprig/
+
+## Run
+
+```bash
+cooonfig --config example/cooonfig.yaml --input-dir example --output-dir target
+```
+
+From a checkout: `go run ./cmd/cooonfig --config example/cooonfig.yaml --input-dir example --output-dir target`.
+
+| Flag | Short | Default | Paths in the config |
+| --- | --- | --- | --- |
+| `--config` | `-c` | `./cooonfig.yaml` | — |
+| `--input-dir` | `-i` | `./` | `inputs[].path` |
+| `--output-dir` | `-o` | `./` | `outputs[].outfile` |
+
+`models[]` and `outputs[].template` are relative to the directory that contains the config file, not `--input-dir`. Output parent directories are created. Existing output files are truncated. There are no subcommands; extra positional arguments print help. `--version` / `-v` prints the version. Errors go to stderr as `Error: ...` and the process exits 1. Stdout lines (`read config`, `read input`, `read model`, `render output`) are progress logs. The generated files are the result.
+
+`inputs`, `models`, and `outputs` are all required and must be non-empty.
+
+```yaml
+inputs:
+  - name: app
+    path: application.yaml
+  - name: env
+    path: environment.yaml
+    type: yaml
+models:
+  - models/core.yaml
+  - models/default.yaml
+outputs:
+  - template: templates/apache_config.json
+    outfile: apache/config.json
+```
+
+Each input needs `name` and `path`. `type` defaults to `yaml` and `yaml` is the only accepted type. Names must be unique. The name `model` is reserved.
+
+## Pipeline
+
+1. Read each input as plain YAML. Inputs are not templates. `{{ }}` in an input is data, not a directive.
+2. Render each model template in order with Go `text/template`. Parse the rendered text as one YAML mapping. Deep-merge it into the model.
+3. Render each output template against the finished model and write the bytes as-is. Output text is not parsed as YAML.
+
+Input files and each rendered model must be a YAML mapping (top-level keys). A top-level list or scalar fails unmarshalling. Empty output, comments only, or `null` add no keys. A model file is a single YAML document; only the first document is read.
+
+Deep-merge rules, applied after each model template:
+
+- Nested maps merge recursively.
+- Any other value at the same key replaces the previous value. A later list replaces the earlier list. A scalar replaces a map, and a map replaces a scalar.
+- Keys are never deleted. Omitting a key from a later model leaves the earlier value in place. Writing `null` stores nil; it does not remove the key.
+- The template sees `.model` as it existed before this file. Keys produced by the current file are visible only to later model templates, under `.model`, and to output templates as root fields.
+
+## Who sees what
+
+Model template data:
+
+- `.app`, `.env`, and any other input name: that input's YAML mapping.
+- `.model`: the map merged from earlier model templates. It is empty for the first model.
+- `$`: the same root. Inside `with` or `range`, `.` changes and `$` is the way back to inputs and `.model`.
+
+Output template data:
+
+- `.` is the finished model. Print `.app_name`, not `.model.app_name` and not `.app.name`.
+- Input names are not in scope. Copy every value an output needs onto the model in a model template.
+- `$` is the finished model.
+
+```yaml
+# models/core.yaml — inputs and the model so far
+app_name: {{ .app.name | quote }}
+app_url: {{ required ".app.source.url is required" .app.source.url | quote }}
+```
+
+```yaml
+# models/default.yaml — later model, reads earlier keys
+working_directory: {{ printf "./workspace/%s" .model.app_name | quote }}
+```
+
+```json
+{
+  "ApplicationName": {{ .app_name | toJson }},
+  "WorkingDirectory": {{ .working_directory | toJson }}
+}
+```
+
+A missing map key does not fail rendering. `{{ .app.missing }}` and `{{ .missing.child }}` print the literal `<no value>`. YAML then stores that as the string `"<no value>"`, and output files contain it too. Guard required fields with `required` or `fail` so a bad input stops the run.
+
+## Model templates
+
+Model templates are the contract between inputs and outputs. Compute defaults, paths, and validation here. Leave output templates as formatting.
+
+- Emit a YAML mapping of the keys you want to add or override.
+- Prefer one file per concern, ordered from required facts, to defaults, to environment overrides. See `example/models/core.yaml`, `default.yaml`, and `kubernetes.yaml`.
+- Quote strings with Sprig `quote`. Unquoted text breaks or changes type when it is parsed back as YAML. `hello: world` is a mapping error. `1.10` becomes float `1.1`. `01` becomes int `1`. `true` / `false` become booleans. An unquoted timestamp such as `2024-01-02` becomes a timestamp. `0.1.0` stays a string only because it is not a valid float. `quote` keeps the characters you wrote.
+- Print numbers and booleans without `quote` when the output really wants those types.
+- Do not print a map or list with bare `{{ .model.ports }}`. Go formatting produces `map[a:1]` and `[80 443]`, which is invalid YAML. Use `toYaml`, `toJson`, or `range`.
+- Do not render `{{ . | toYaml }}` or `{{ toYaml .model }}` as the model body. `.` includes the inputs and `.model`. Emit only the keys this file is responsible for.
+- `toYaml` sorts map keys, indents nested collections four spaces, and ends with a newline. Put the action at column 0 and indent with `nindent`:
+
+```yaml
+source:
+{{ .app.source | toYaml | nindent 2 }}
+```
+
+- Build nested values in the template, then marshal them, so quoting is not done by hand:
+
+```yaml
+server:
+{{ dict "host" .env.host "port" .env.port | toYaml | nindent 2 }}
+```
+
+- Lists replace. To add an item, write the whole list again. `append` on a missing list fails; use `default (list)` first:
+
+```yaml
+ports:
+{{ append (.model.ports | default (list)) .env.extra_port | toYaml | nindent 2 }}
+```
+
+- Keys that are not identifiers (`app-name`, `01ver`) are read with `index`: `{{ index .app "app-name" | quote }}`.
+- `{{ define "partial" }}` and `{{ template "partial" . }}` work only inside the same file. There is no shared partial library and no `include`.
+
+Validate in the model that first needs the value:
+
+```yaml
+{{ if not .app.name }}
+{{ fail "app.name is required" }}
+{{ end }}
+app_name: {{ .app.name | quote }}
+app_version: {{ .app.version | default "0.1.0" | quote }}
+```
+
+`fail` aborts rendering. `if not` and Sprig `default` / `empty` treat nil, `false`, `0`, `""`, and empty maps or lists as empty, so `default` will replace a real `0` or `false`. `required` is stricter about type and looser about other empties: it errors only for nil or `""`, and it accepts `0` and `false`.
+
+## Output templates
+
+Output templates may be JSON, YAML, env files, XML, or any other text. cooonfig does not check the format. Invalid JSON is still written if the template emits it.
+
+- Every field printed here must already exist on the model. Shared defaults belong in a model template so every output sees them.
+- A missing key prints `<no value>` and still writes the file. Call `required` on fields the file cannot do without: `{{ required "app_name is required" .app_name }}`.
+- `quote` is for YAML scalars. For JSON strings use `toJson`, which adds quotes and escapes. Do not wrap `toJson` in extra quotes.
+
+```json
+{
+  "ApplicationName": {{ required "app_name is required" .app_name | toJson }},
+  "Port": {{ .port }}
+}
+```
+
+- A whole document can be dumped for debugging, as in `example/templates/all.json` and `all.yaml`: `{{ . | toPrettyJson }}` and `{{ . | toYaml }}`.
+- Hand-write a different shape when the output schema is not the model schema, as in `example/templates/kafka_config.yml` and `apache_config.json`.
+- Inside `with` or `range`, `.` is the current value. Use `$` for other model fields: `{{ $.app_name }}`.
+- `text/template` does not HTML-escape. `&` and `<` are written unchanged.
+- To emit the characters `{{` or `}}`, print them as strings: `{{ "{{" }}` and `{{ "}}" }}`.
+- Sprig `toYaml` is not defined by Sprig. cooonfig provides `toYaml`. Sprig does provide `toJson`, `toPrettyJson`, and `toRawJson`.
+
+## Functions
+
+Templates use Sprig's text function map, plus two cooonfig functions. Both argument orders work; the piped value is the last argument.
+
+`required` — message first, value second. Errors when the value is nil or `""`:
+
+```
+{{ required ".app.source.url is required" .app.source.url }}
+{{ .app.source.url | required ".app.source.url is required" }}
+```
+
+`toYaml` — marshal one value to YAML (sorted keys, four-space nested indent, trailing newline).
+
+Sprig functions used most often from this tool:
+
+| Function | Use |
+| --- | --- |
+| `fail` | Abort with a message: `{{ fail "app.name is required" }}` |
+| `default` | Replace an empty value. Also replaces `0` and `false`. |
+| `empty` | Test for empty, including `0` and `false`. |
+| `quote` / `squote` | Quote a YAML string. |
+| `nindent` / `indent` | Indent marshaled YAML. `nindent` starts with a newline. |
+| `toJson` / `toPrettyJson` | JSON values and documents. |
+| `dict` / `list` / `append` / `hasKey` / `index` / `dig` | Build and read maps and lists. |
+| `printf` | Assemble strings before quoting. |
+
+`dig` takes keys, then a default, then the map: `{{ dig "source" "url" "" .app }}`.
+
+## Checklist
+
+- Config has non-empty `inputs`, `models`, and `outputs`. No input is named `model`. Every input `type` is omitted or `yaml`.
+- Input paths are relative to `--input-dir`. Model and output template paths are relative to the config file's directory. `outfile` is relative to `--output-dir`.
+- Each input file is a YAML mapping.
+- Each model template renders one YAML mapping. Strings are passed through `quote`. Maps and lists are passed through `toYaml`.
+- Required inputs use `required` or `fail`. The rendered model never contains `<no value>`.
+- Later models override by writing the same key. They do not expect list merge or key deletion.
+- Output templates read root model fields only. JSON strings use `toJson`.
+- Run cooonfig and read the files under `--output-dir`.
+
+## Files
+
+- [README](README.md): CLI, config fields, and template overview
+- [Install](INSTALL.md): binary install methods
+- [Example config](example/cooonfig.yaml): inputs, model order, and outputs
+- [Example application input](example/application.yaml): YAML mapping named `app`
+- [Example environment input](example/environment.yaml): YAML mapping named `env`
+- [Example core model](example/models/core.yaml): required input fields and defaults
+- [Example default model](example/models/default.yaml): keys derived from `.model`
+- [Example kubernetes model](example/models/kubernetes.yaml): later override using `.model`
+- [Example Apache output](example/templates/apache_config.json): JSON shaped from model fields
+- [Example Kafka output](example/templates/kafka_config.yml): YAML shaped from model fields
+- [Example JSON dump](example/templates/all.json): whole model via `toPrettyJson`
+- [Example YAML dump](example/templates/all.yaml): whole model via `toYaml`
